@@ -29,28 +29,29 @@ export class App extends React.Component {
 					collapsed={this.state.collapsed}
 					onCollapse={this.onCollapse}
 				>
-					<div className="logo"><h1>可萌</h1></div>
+					<div className="logo"><h1>hong</h1></div>
 					<Menu theme="dark" mode="inline" defaultSelectedKeys={['']}>
 						<Menu.Item key="1">
 							<Icon type="user" />
 								<Link className="nav-text" to="/user">用户</Link>
 
 						</Menu.Item>
-						<Menu.Item key="2">
-							<Icon type="message" />
-							<span className="nav-text">
-									消息系统
-								</span>
-							<Link to="/message">
 
-							</Link>
-						</Menu.Item>
 						<Menu.Item key="3">
 							<Icon type="bulb" />
 							<span className="nav-text">
-									活动管理
+									email管理
 								</span>
-							<Link to="/activity">
+							<Link to="/email">
+
+							</Link>
+						</Menu.Item>
+						<Menu.Item key="4">
+							<Icon type="bulb" />
+							<span className="nav-text">
+									url管理
+								</span>
+							<Link to="/url">
 
 							</Link>
 						</Menu.Item>
