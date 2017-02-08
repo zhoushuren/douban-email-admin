@@ -29,7 +29,7 @@ export class App extends React.Component {
 					collapsed={this.state.collapsed}
 					onCollapse={this.onCollapse}
 				>
-					<div className="logo"><h1>可萌</h1></div>
+					<div className="logo"><h1>可萌后台管理系统</h1></div>
 					<Menu theme="dark" mode="inline" defaultSelectedKeys={['']}>
 						<Menu.Item key="1">
 							<Icon type="user" />
@@ -67,7 +67,7 @@ export class App extends React.Component {
 						</div>
 					</Content>
 					<Footer style={{ textAlign: 'center' }}>
-						Kemeng ©2016
+						Kemeng ©2017
 					</Footer>
 				</Layout>
 			</Layout>
