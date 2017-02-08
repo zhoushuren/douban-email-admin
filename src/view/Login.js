@@ -5,7 +5,7 @@
 import React from 'react';
 
 import { Form,Icon, Input, Button, Checkbox } from 'antd';
-
+import http from '../http';
 import './style/login.css';
 
 const FormItem = Form.Item;
@@ -15,6 +15,21 @@ const Login = Form.create()(React.createClass({
 		this.props.form.validateFields((err, values) => {
 			if (!err) {
 				console.log('Received values of form: ', values);
+
+				http('/post_login', {
+					method: 'POST',
+					body: JSON.stringify(values),
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				}).then((data)=> {
+					if(data.result){
+
+						alert('登录成功')
+
+					}
+
+				}).catch((e)=>alert(e.message));
 			}
 		});
 	},
@@ -25,17 +40,17 @@ const Login = Form.create()(React.createClass({
 				<div className="main">
 					<Form onSubmit={this.handleSubmit} className="login-form">
 						<FormItem>
-							{getFieldDecorator('userName', {
-								rules: [{ required: true, message: 'Please input your username!' }],
+							{getFieldDecorator('username', {
+								rules: [{ required: true, message: '请输入用户名!' }],
 							})(
-								<Input addonBefore={<Icon type="user" />} placeholder="Username" />
+								<Input addonBefore={<Icon type="user" />} placeholder="请输入用户名" />
 							)}
 						</FormItem>
 						<FormItem>
 							{getFieldDecorator('password', {
-								rules: [{ required: true, message: 'Please input your Password!' }],
+								rules: [{ required: true, message: '请输入密码' }],
 							})(
-								<Input addonBefore={<Icon type="lock" />} type="password" placeholder="Password" />
+								<Input addonBefore={<Icon type="lock" />} type="password" placeholder="请输入密码" />
 							)}
 						</FormItem>
 						<FormItem>
@@ -47,7 +62,7 @@ const Login = Form.create()(React.createClass({
 							)}
 							<a className="login-form-forgot">Forgot password</a>
 							<Button type="primary" htmlType="submit" className="login-form-button">
-								Log in
+								登录
 							</Button>
 							Or <a>register now!</a>
 						</FormItem>
