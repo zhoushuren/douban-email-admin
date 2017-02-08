@@ -18,7 +18,6 @@ export async function addMsg (ctx,next){
 		created_time: Math.round(Date.now() / 1000)
 	};
 	let result = await db.query(sql,value);
-	console.log(result)
 	if(result){
 		ctx.body = {
 			result: true,

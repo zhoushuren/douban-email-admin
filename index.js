@@ -6,6 +6,7 @@ import App from './src/App';
 import Message from './src/view/Message';
 import Activity from './src/view/Activity';
 import Users from './src/view/Users';
+import Logion from './src/view/Login';
 render((
     <Router history={browserHistory}>
         <Route  breadcrumbName="首页" path="/" component={App}>
@@ -15,5 +16,6 @@ render((
             </Route>
 
         </Route>
+        <Route path="/login" component={Logion} />
     </Router>
 ), document.getElementById('root'))
