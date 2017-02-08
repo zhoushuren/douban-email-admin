@@ -21,7 +21,7 @@ const Login = Form.create()(React.createClass({
 	render() {
 		const { getFieldDecorator } = this.props.form;
 		return (
-			<div id="aa">
+			<div id="login-page">
 				<div className="main">
 					<Form onSubmit={this.handleSubmit} className="login-form">
 						<FormItem>
