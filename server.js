@@ -27,22 +27,18 @@ app.use(convert(session(CONFIG,app)));
 
 app.use(async(ctx,next)=>{
 
-
 	if(ctx.path == '/login' && !ctx.session.login ){
 		await send(ctx, 'index.html');
 	}else{
 		if(ctx.path == '/login'){
 			ctx.redirect('/');
 		}
-
 		if(ctx.session.login || ctx.path == '/post_login'){
 			await next();
 		}else{
 			ctx.redirect('login');
 		}
 	}
-
-
 
 });
 
