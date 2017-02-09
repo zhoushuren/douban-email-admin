@@ -4,7 +4,7 @@
  */
 
 
-
+var rp = require('request-promise');
 
 var MongoClient = require('mongodb').MongoClient;
 var DB_CONN_STR = 'mongodb://localhost:27017/test_db';
@@ -44,7 +44,7 @@ export async function delUrl( ctx,next ) {
 	}
 
 }
-
+import qs from 'querystring';
 export async function runPC(ctx,next){
 	let id = ctx.query.id;
 	let conndition = {};
@@ -54,22 +54,49 @@ export async function runPC(ctx,next){
 	const db = await MongoClient.connect(DB_CONN_STR);
 	var collection = db.collection('douban_url');
 	let result = await collection.find(conndition).toArray();
-	console.log(result);
-	result.forEach((item)=>{
-		var cmdStr = 'python /home/www/feisu/src/py/dou.py ';
-		cmdStr += item.url;
-		console.log(cmdStr)
-		exec(cmdStr,function (err,stdout,stderr){
-			console.log('python执行结果')
-			console.log(stdout);
+	let obj = result[0];
+	console.log(obj);
+	if(obj.type == 1){
+		var options = {
+			method: 'POST',
+			uri: 'http://127.0.0.1:8001/get_email',
+			body: qs.stringify({
+				url: obj.url,
+				//		desc: obj.desc
+			}),
+			headers:{
+				'Content-Type':'application/x-www-form-urlencoded'
+			},
+			json: true // Automatically stringifies the body to JSON
+		};
+	}else if(obj.type ==2){
 
-		})
-	})
-
-	ctx.body = {
-		result : true,
-		msg: '爬取完毕'
 	}
+
+	let res = await rp(options);
+	console.log(res);
+	console.log(typeof res);
+	ctx.body = {
+		result:true,
+		msg: '爬取成功',
+		res: res
+	}
+	//console.log(result);
+	//result.forEach((item)=>{
+	//	var cmdStr = 'python /home/www/feisu/src/py/dou.py ';
+	//	cmdStr += item.url;
+	//	console.log(cmdStr)
+	//	exec(cmdStr,function (err,stdout,stderr){
+	//		console.log('python执行结果')
+	//		console.log(stdout);
+	//
+	//	})
+	//})
+
+	//ctx.body = {
+	//	result : true,
+	//	msg: '爬取完毕'
+	//}
 
 
 }

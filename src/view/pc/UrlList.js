@@ -6,9 +6,10 @@
  * Created by zhoujun on 2017/2/6.
  * email :zhoujun247@gmail.com
  */
-import { Table, Button,Tabs,Form,Input,message,Select} from 'antd';
+import { Table, Button,Tabs,Form,Input,message,Select,Modal} from 'antd';
 const { Column, ColumnGroup } = Table;
 import React from 'react';
+
 import http from '../../http';
 const TabPane = Tabs.TabPane;
 const FormItem = Form.Item;
@@ -16,7 +17,7 @@ const Option = Select.Option;
 export class UrlList extends React.Component {
 	constructor( props ) {
 		super( props );
-		this.state = { selectedRowKeys : '',loading:false};
+		this.state = { selectedRowKeys : '',loading:false, loadingPc: false, visible: false};
 	}
 	start() {
 		this.setState({ loading: true });
@@ -185,7 +186,7 @@ export class UrlList extends React.Component {
 								render={(text, record) => (
 							<span>
 								<Button onClick={this.delete.bind(this,record._id)} type="danger">删除</Button>|
-								<Button onClick={this.runpc.bind(this,record._id)} type="primary">爬一下</Button>|
+								<Button loading={this.state.loadingPc} onClick={this.runpc.bind(this,record._id,this)} type="primary">爬一下</Button>|
 								<Button onClick={this.delete.bind(this,record.id)} type="primary">显示当前email</Button>
 							</span>
 						  )}
@@ -193,7 +194,13 @@ export class UrlList extends React.Component {
 						</Table>
 					</TabPane>
 				</Tabs>
-
+				<Modal title="Basic Modal" visible={this.state.visible}
+					   onOk={this.handleOk.bind(this)} onCancel={this.handleCancel.bind(this)}
+				>
+					<p>some contents...</p>
+					<p>some contents...</p>
+					<p>some contents...</p>
+				</Modal>
 			</div>
 		)
 	}
@@ -210,15 +217,37 @@ export class UrlList extends React.Component {
 		}).catch((e)=>alert(e.message));
 	}
 
-	runpc(id){
+	runpc(id,that){
+
+		this.setState({ loadingPc: true });
 		http('/runpc?id='+id, {
 			method: 'get',
 			headers: {
 				'Content-Type': 'application/json'
 			}
 		}).then((data)=> {
-			this.componentDidMount()
+			var list = data.emailList;
+			
+			//message.success(data.msg);
+			console.log(22)
+			this.setState({
+				loadingPc: false,
+				visible: true,
+			});
+
+
+
 		}).catch((e)=>alert(e.message));
+	}
+	handleOk(){
+		this.setState({
+			visible: false,
+		});
+	}
+	handleCancel(){
+		this.setState({
+			visible: false,
+		});
 	}
 }
 export default UrlList;

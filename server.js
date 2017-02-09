@@ -13,7 +13,7 @@ const path = require('path');
 var send = require('koa-send');
 const app = new Koa();
 
-const ENV = '11'
+const ENV = 'test'
 app.keys = ['some secret hurr'];
 
 var CONFIG = {
@@ -54,5 +54,5 @@ if(ENV == 'test'){
 	})
 }
 
-app.listen(4001);
+app.listen(4000);
 console.log('listen:4000')
