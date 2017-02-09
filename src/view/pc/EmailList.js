@@ -9,7 +9,7 @@ import React from 'react';
 import http from '../../http';
 
 
-export class UrlList extends React.Component {
+export class EmailList extends React.Component {
 	constructor( props ) {
 		super( props );
 		this.state = { selectedRowKeys : '',loading:false};
@@ -28,7 +28,7 @@ export class UrlList extends React.Component {
 		this.setState({ selectedRowKeys });
 	}
 	componentDidMount(){
-		http('/get_msg_list', {
+		http('/get_email_list', {
 			method: 'get',
 			headers: {
 				'Content-Type': 'application/json'
@@ -83,4 +83,4 @@ export class UrlList extends React.Component {
 		}).catch((e)=>alert(e.message));
 	}
 }
-export default UrlList;
+export default EmailList;

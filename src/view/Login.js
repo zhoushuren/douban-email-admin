@@ -26,7 +26,7 @@ const Login = Form.create()(React.createClass({
 					if(data.result){
 
 						alert('登录成功')
-
+						location.href = '/'
 					}
 
 				}).catch((e)=>alert(e.message));
