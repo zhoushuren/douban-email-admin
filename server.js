@@ -13,7 +13,7 @@ const path = require('path');
 var send = require('koa-send');
 const app = new Koa();
 
-const ENV = 'pro'
+const ENV = 'test'
 app.keys = ['some secret hurr'];
 
 var CONFIG = {
@@ -28,7 +28,7 @@ app.use(convert(session(CONFIG,app)));
 app.use(async(ctx,next)=>{
 
 	if(ctx.path == '/login' && !ctx.session.login ){
-		await send(ctx, 'index.html');
+		await send(ctx, 'index-production.html');
 	}else{
 		if(ctx.path == '/login'){
 			ctx.redirect('/');
@@ -54,5 +54,5 @@ if(ENV == 'test'){
 	})
 }
 
-app.listen(4000);
+app.listen(4001);
 console.log('listen:4000')
