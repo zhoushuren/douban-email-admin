@@ -16,7 +16,7 @@ const Option = Select.Option;
 export class UrlList extends React.Component {
 	constructor( props ) {
 		super( props );
-		this.state = { selectedRowKeys : '',loading:false,typeValue:'douban'};
+		this.state = { selectedRowKeys : '',loading:false};
 	}
 	start() {
 		this.setState({ loading: true });
@@ -33,7 +33,7 @@ export class UrlList extends React.Component {
 	}
 
 	checkInput(name,event){
-		if(name == 'title'){
+		if(name == 'desc'){
 			this.setState({desc:event.target.value});
 		}else if(name== 'type'){
 			console.log(event)
@@ -60,11 +60,11 @@ export class UrlList extends React.Component {
 			});
 		}
 
-		if(this.state.summaryValue == undefined ){
-			message.warning('摘要不能为空');
+		if(this.state.typeValue == undefined ){
+			message.warning('类型不能为空');
 			this.setState({
 				loading: false,
-				validateStatusTitle: 'error'
+				validateStatusType: 'error'
 			});
 			return;
 		}
@@ -99,13 +99,21 @@ export class UrlList extends React.Component {
 	}
 
 	componentDidMount(){
-		http('/get_msg_list', {
+		http('/get_url_list', {
 			method: 'get',
 			headers: {
 				'Content-Type': 'application/json'
 			}
 		}).then((data)=> {
-			data.list.map((r)=>{r.key=r.id; return r;})
+			data.list.map((r)=>{
+				r.key=r.id;
+				if(r.type == 1){
+					r.typeName = '豆瓣';
+				}else if(r.type == 2){
+					r.typeName = '贴吧';
+				}
+				return r;
+			})
 			this.setState({ data: data.list });
 		}).catch((e)=>alert(e.message));
 	}
@@ -123,18 +131,18 @@ export class UrlList extends React.Component {
 								hasFeedback
 								validateStatus={this.state.validateStatusTitle}
 							>
-								<Input placeholder="请输入消息备注" value={this.state.desc} onChange={this.checkInput.bind(this,'title')} />
+								<Input placeholder="请输入消息备注" value={this.state.desc} onChange={this.checkInput.bind(this,'desc')} />
 							</FormItem>
 							<FormItem
 								label="类型"
 								labelCol={{ span: 5 }}
 								wrapperCol={{ span: 12 }}
 								hasFeedback
-								validateStatus="success"
+								validateStatus={this.state.validateStatusType}
 							>
-								<Select value={this.state.typeValue} defaultValue="douban" style={{ width: 120 }} onChange={this.checkInput.bind(this,'type')}>
-									<Option value="douban">豆瓣</Option>
-									<Option value="tieba">贴吧</Option>
+								<Select value={this.state.typeValue} defaultValue="1" style={{ width: 120 }} onChange={this.checkInput.bind(this,'type')}>
+									<Option value="1">豆瓣</Option>
+									<Option value="2">贴吧</Option>
 								</Select>
 							</FormItem>
 							<FormItem
@@ -157,16 +165,16 @@ export class UrlList extends React.Component {
 						<Table dataSource={this.state.data}  >
 							<Column
 								title="id"
-								dataIndex="id"
+								dataIndex="_id"
 								key="id"
 							/>
 							<Column
-								title="Title"
-								dataIndex="title"
+								title="备注"
+								dataIndex="desc"
 							/>
 							<Column
-								title="summary"
-								dataIndex="summary"
+								title="类型"
+								dataIndex="typeName"
 							/>
 							<Column
 								title="url"
@@ -176,8 +184,8 @@ export class UrlList extends React.Component {
 								title="操作"
 								render={(text, record) => (
 							<span>
-								<Button onClick={this.delete.bind(this,record.id)} type="danger">删除</Button>|
-								<Button onClick={this.delete.bind(this,record.id)} type="primary">爬一下</Button>|
+								<Button onClick={this.delete.bind(this,record._id)} type="danger">删除</Button>|
+								<Button onClick={this.runpc.bind(this,record._id)} type="primary">爬一下</Button>|
 								<Button onClick={this.delete.bind(this,record.id)} type="primary">显示当前email</Button>
 							</span>
 						  )}
@@ -191,7 +199,19 @@ export class UrlList extends React.Component {
 	}
 
 	delete(id){
-		http('/delete_msg?id='+id, {
+		http('/delurl', {
+			method: 'post',
+			body: JSON.stringify({_id: id}),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then((data)=> {
+			this.componentDidMount()
+		}).catch((e)=>alert(e.message));
+	}
+
+	runpc(id){
+		http('/runpc?id='+id, {
 			method: 'get',
 			headers: {
 				'Content-Type': 'application/json'

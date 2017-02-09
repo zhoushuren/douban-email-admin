@@ -16,9 +16,12 @@ export async function setUrl( ctx,next ) {
 	var collection = db.collection('douban_url');
 	let url = ctx.request.body.url;
 	let desc = ctx.request.body.desc;
+	let type = ctx.request.body.typeValue;
+	console.log(type);
 	let result = await collection.insert({
 		url :url,
 		desc :desc,
+		type: type,
 		time: Date.now()
 	});
 
@@ -43,9 +46,14 @@ export async function delUrl( ctx,next ) {
 }
 
 export async function runPC(ctx,next){
+	let id = ctx.query.id;
+	let conndition = {};
+	if(id){
+		conndition._id = ObjectID(id)
+	}
 	const db = await MongoClient.connect(DB_CONN_STR);
 	var collection = db.collection('douban_url');
-	let result = await collection.find().toArray();
+	let result = await collection.find(conndition).toArray();
 	console.log(result);
 	result.forEach((item)=>{
 		var cmdStr = 'python /home/www/feisu/src/py/dou.py ';
@@ -98,5 +106,27 @@ export async function day(ctx,next){
 	})
 	ctx.body = {
 		email:strEmail
+	}
+}
+
+export async function getEmailList(ctx,next){
+
+	const db = await MongoClient.connect(DB_CONN_STR);
+	var collection = db.collection('douban');
+	let dtime  =new Date(new Date().toLocaleDateString()).getTime() /1000;
+	let email = await collection.find({}).toArray();
+
+	ctx.body = {
+		list: email
+	}
+}
+
+export async function getUrlList(ctx,next){
+	const db = await MongoClient.connect(DB_CONN_STR);
+	var collection = db.collection('douban_url');
+	let result = await collection.find().toArray();
+
+	ctx.body = {
+		list: result
 	}
 }

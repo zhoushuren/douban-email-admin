@@ -17,5 +17,7 @@ router.get('/runpc',eMail.runPC);
 router.post('/sousuo',eMail.sousuo);
 router.get('/love',eMail.love);
 router.get('/day',eMail.day);
+router.get('/get_email_list',eMail.getEmailList);
+router.get('/get_url_list',eMail.getUrlList);
 
 export default router;
