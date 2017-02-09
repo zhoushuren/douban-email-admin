@@ -13,7 +13,7 @@ const path = require('path');
 var send = require('koa-send');
 const app = new Koa();
 
-
+const ENV = 'pro'
 app.keys = ['some secret hurr'];
 
 var CONFIG = {
@@ -44,9 +44,15 @@ app.use(async(ctx,next)=>{
 
 app.use(bodyparser());
 app.use(messageRouter.routes(),messageRouter.allowedMethods());
+if(ENV == 'test'){
+	app.use(async function (ctx, next){
+		await send(ctx, 'index.html');
+	})
+}else{
+	app.use(async function (ctx, next){
+		await send(ctx, 'index-production.html');
+	})
+}
 
-app.use(async function (ctx, next){
-	await send(ctx, 'index.html');
-})
 app.listen(4000);
 console.log('listen:4000')
