@@ -25,7 +25,7 @@ export class Send extends React.Component{
 	onSubmit(event){
 		this.setState({ loading: true });
 		console.log(this.state);
-		if(this.state.titleValue == undefined){
+		if(this.state.titleValue == undefined || this.state.titleValue =='' ){
 			message.warning('标题不能为空');
 			this.setState({
 				loading: false,
@@ -35,25 +35,35 @@ export class Send extends React.Component{
 		}else{
 
 			this.setState({
-				validateStatusTitle: ''
+				validateStatusTitle: 'success'
 			});
 		}
 
-		if(this.state.summaryValue == undefined ){
+		if(this.state.summaryValue == undefined || this.state.summaryValue == '' ){
 			message.warning('摘要不能为空');
 			this.setState({
 				loading: false,
-				validateStatusTitle: 'error'
+				validateStatusSummary: 'error'
 			});
 			return;
+		}else{
+			this.setState({
+				loading: false,
+				validateStatusSummary: 'success'
+			});
 		}
-		if(this.state.url == undefined){
+		if(this.state.url == undefined || this.state.url == '' ){
 			message.warning('url不能为空');
 			this.setState({
 				loading: false,
-				validateStatusTitle: 'error'
+				validateStatusUrl: 'error'
 			});
 			return;
+		}else{
+			this.setState({
+				loading: false,
+				validateStatusUrl: 'success'
+			});
 		}
 
 		http('/api', {
@@ -88,14 +98,14 @@ export class Send extends React.Component{
 					hasFeedback
 					validateStatus={this.state.validateStatusTitle}
 				>
-					<Input placeholder="请输入消息备注" value={this.state.titleValue} onChange={this.checkInput.bind(this,'title')} />
+					<Input placeholder="请输入消息标题" value={this.state.titleValue} onChange={this.checkInput.bind(this,'title')} />
 				</FormItem>
 				<FormItem
 					label="摘要"
 					labelCol={{ span: 5 }}
 					wrapperCol={{ span: 12 }}
 					hasFeedback
-					validateStatus="success"
+					validateStatus={this.state.validateStatusSummary}
 				>
 					<Input placeholder="请输入摘要" value={this.state.summaryValue} onChange={this.checkInput.bind(this,'summary')} />
 				</FormItem>
@@ -104,7 +114,7 @@ export class Send extends React.Component{
 					labelCol={{ span: 5 }}
 					wrapperCol={{ span: 12 }}
 					hasFeedback
-					validateStatus="success"
+					validateStatus={this.state.validateStatusUrl}
 				>
 					<Input placeholder="请输入网页链接"  value={this.state.url} onChange={this.checkInput.bind(this,'url')} />
 				</FormItem>

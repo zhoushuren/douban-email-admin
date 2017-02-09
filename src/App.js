@@ -68,7 +68,7 @@ export class App extends React.Component {
 						</div>
 					</Content>
 					<Footer style={{ textAlign: 'center' }}>
-						Kemeng ©2016
+						Kemeng ©2017
 					</Footer>
 				</Layout>
 			</Layout>
