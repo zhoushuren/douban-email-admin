@@ -55,7 +55,7 @@ export async function runPC(ctx,next){
 	var collection = db.collection('douban_url');
 	let result = await collection.find(conndition).toArray();
 	let obj = result[0];
-	console.log(obj);
+	//console.log(obj);
 	if(obj.type == 1){
 		var options = {
 			method: 'POST',
@@ -78,19 +78,22 @@ export async function runPC(ctx,next){
 	if( res.emailList.length >0){
 		var coll_douban = db.collection('douban');
 		let countSuccess = 0;
-		res.emailList.map(async (r)=>{
-				try{
-					r.desc = obj.desc
-					let result = await  coll_douban.insert(r);
-					countSuccess++
-					console.log(result);
-				}catch (e){
-					console.log('插入失败');
-				//	console.log(e);
-				}
-		});
-		console.log(countSuccess);
 
+		for (let k in res.emailList){
+			let r = res.emailList[k];
+			try{
+				r.desc = obj.desc
+				let result = await  coll_douban.insert(r);
+				countSuccess++
+			}catch (e){
+				//console.log('插入失败');
+				//	console.log(e);
+			}
+		}
+
+		console.log(countSuccess);
+		let re =  await collection.update(conndition,{"$set":{'update_time':new Date(),total_num:len,data_num:countSuccess}});
+	//	console.log(re.result)
 		ctx.body = {
 			result:true,
 			msg: '爬取成功',
@@ -190,7 +193,7 @@ export async function getUrlList(ctx,next){
 	const db = await MongoClient.connect(DB_CONN_STR);
 	var collection = db.collection('douban_url');
 	let result = await collection.find().toArray();
-
+	
 	ctx.body = {
 		list: result
 	}
@@ -229,4 +232,18 @@ export async function setStatus(ctx,next){
 
 	}
 
+}
+
+//根据时间删除数据
+export async function deleteTime(ctx,next){
+	let time = ctx.query.time;
+	const db = await MongoClient.connect(DB_CONN_STR);
+	var collection = db.collection('douban');
+	let email =  await collection.deleteMany({time:parseInt(time)});
+//	console.log(email);
+
+	ctx.body= {
+		result : true,
+		msg: '删除成功'
+	}
 }

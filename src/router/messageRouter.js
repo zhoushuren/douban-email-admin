@@ -22,5 +22,6 @@ router.get('/get_email_list',eMail.getEmailList);
 router.get('/get_url_list',eMail.getUrlList);
 router.get('/get_email_time',eMail.getEmailByTime);
 router.get('/set_status',eMail.setStatus);
+router.get('/delete_email',eMail.deleteTime);
 
 export default router;

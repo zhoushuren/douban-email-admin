@@ -119,6 +119,7 @@ export class UrlList extends React.Component {
 		}).catch((e)=>alert(e.message));
 	}
 	render(){
+
 		return (
 			<div>
 
@@ -153,7 +154,7 @@ export class UrlList extends React.Component {
 								hasFeedback
 								validateStatus="success"
 							>
-								<Input placeholder="请输入网页链接"  value={this.state.url} onChange={this.checkInput.bind(this,'url')} />
+								<Input placeholder="请输入网页链接"  type="url" required value={this.state.url} onChange={this.checkInput.bind(this,'url')} />
 							</FormItem>
 							<FormItem
 								wrapperCol={{ span: 12, offset: 6 }}
@@ -163,7 +164,7 @@ export class UrlList extends React.Component {
 						</Form>
 					</TabPane>
 					<TabPane tab="列表" key="2">
-						<Table dataSource={this.state.data}  >
+						<Table dataSource={this.state.data} >
 							<Column
 								title="id"
 								dataIndex="_id"
@@ -182,6 +183,19 @@ export class UrlList extends React.Component {
 								dataIndex="url"
 							/>
 							<Column
+								title="上次爬取时间"
+								dataIndex="update_time"
+							/>
+							<Column
+								title="爬取情况"
+								render={(text, record) => (
+								<span>本贴所含Email总数：{record.total_num |0}
+									/上次爬取新内容{record.data_num|0}
+								</span>
+
+								)}
+							/>
+							<Column
 								title="操作"
 								render={(text, record) => (
 							<span>
@@ -189,8 +203,8 @@ export class UrlList extends React.Component {
 							 	<Popconfirm placement="leftTop" title="确定删除吗？不要后悔哦!" onConfirm={this.delete.bind(this,record._id)} okText="确定" cancelText="算了吧">
 									<Button type="danger">删除</Button>|
 								</Popconfirm>
-
-								<Button loading={this.state.loadingPc} onClick={this.runpc.bind(this,record._id,this)} type="primary">爬一下</Button>|
+									<PcButton onClick={ this.runpc.bind(this,record._id)  } />
+								|
 								<Button onClick={this.delete.bind(this,record.id)} type="primary">显示当前email(还没做不要点)</Button>
 							</span>
 						  )}
@@ -223,19 +237,16 @@ export class UrlList extends React.Component {
 		}).catch((e)=>alert(e.message));
 	}
 
-	runpc(id,loading){
-		console.log(loading);
-		this.setState({ loadingPc: true });
+	runpc(id,cb){
+
 		http('/runpc?id='+id, {
 			method: 'get',
 			headers: {
 				'Content-Type': 'application/json'
 			}
 		}).then((data)=> {
-			var list = data.emailList;
-			
-			//message.success(data.msg);
 
+			cb(false);
 			this.setState({
 				loadingPc: false,
 				visible: true,
@@ -245,9 +256,11 @@ export class UrlList extends React.Component {
 			});
 
 
-
-		}).catch((e)=>alert(e.message));
+			this.componentDidMount();
+		}).catch((e)=>{ cb(false);  alert(e.message)});
 	}
+
+
 	handleOk(){
 		this.setState({
 			visible: false,
@@ -260,3 +273,36 @@ export class UrlList extends React.Component {
 	}
 }
 export default UrlList;
+
+
+class PcButton extends React.Component{
+	constructor( props ) {
+		super( props );
+		this.state = { selectedRowKeys : '',loading:false, loadingPc: false, visible: false};
+	}
+
+	render(){
+
+		return(
+
+		<Button loading={this.state.loading }  onClick={this.click.bind(this)}    type="primary">爬一下</Button>
+
+		)
+
+	}
+
+	click(){
+		this.setState({
+			loading: true
+		})
+
+		return this.props.onClick((bool)=>{
+
+			this.setState({
+				loading: bool
+			})
+
+		});
+	}
+
+}

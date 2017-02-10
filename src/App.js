@@ -7,7 +7,7 @@ import React from 'react';
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 import ReactRouter,{ Link} from 'react-router';
 const { Header, Content, Footer, Sider } = Layout;
-
+import '../index.css'
 export class App extends React.Component {
 
 	constructor( props ) {
@@ -23,7 +23,7 @@ export class App extends React.Component {
 	}
 	render() {
 		return (
-			<Layout>
+			<Layout style={{width:"100%" , height:"100%" }}>
 				<Sider
 					collapsible
 					collapsed={this.state.collapsed}
@@ -57,7 +57,7 @@ export class App extends React.Component {
 						</Menu.Item>
 					</Menu>
 				</Sider>
-				<Layout>
+				<Layout style={{width:"100%" , height:"100%" }}>
 					<Header style={{ background: '#fff', padding: 0 }} />
 					<Content style={{ margin: '0 16px' }}>
 						<Breadcrumb {...this.props} style={{ margin: '12px 0' }} router={ReactRouter}>

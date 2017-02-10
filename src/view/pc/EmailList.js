@@ -3,7 +3,7 @@
  * email :zhoujun247@gmail.com
  */
 
-import { Table, Button ,Modal ,Input,Switch} from 'antd';
+import { Table, Button ,Modal ,Input,Switch,Popconfirm} from 'antd';
 const { Column, ColumnGroup } = Table;
 import React from 'react';
 import http from '../../http';
@@ -70,8 +70,12 @@ export class EmailList extends React.Component {
 						title="操作"
 						render={(text, record) => (
 							<span>
-								<Button onClick={this.delete.bind(this,record._id)} type="danger">标记已发</Button>|
-								<Button onClick={this.show.bind(this,record._id)} type="danger">显示邮箱</Button>
+								<Button onClick={this.setStatus.bind(this,record._id)} type="danger">标记已发</Button>|
+								<Button onClick={this.show.bind(this,record._id)} type="primary">显示邮箱</Button>
+									 	<Popconfirm placement="leftTop" title="确定删除吗？不要后悔哦!" onConfirm={this.delete.bind(this,record._id)} okText="确定" cancelText="算了吧">
+									<Button type="danger">删除</Button>|
+								</Popconfirm>
+
 							</span>
 						  )}
 					/>
@@ -90,6 +94,18 @@ export class EmailList extends React.Component {
 	}
 
 	delete(id){
+		http('/delete_email?time='+id, {
+			method: 'get',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then((data)=> {
+			this.componentDidMount();
+
+		}).catch((e)=>alert(e.message));
+	}
+
+	setStatus(){
 		http('/set_status?id='+id, {
 			method: 'get',
 			headers: {
