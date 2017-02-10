@@ -6,7 +6,7 @@
  * Created by zhoujun on 2017/2/6.
  * email :zhoujun247@gmail.com
  */
-import { Table, Button,Tabs,Form,Input,message,Select,Modal} from 'antd';
+import { Table, Button,Tabs,Form,Input,message,Select,Modal,Popconfirm} from 'antd';
 const { Column, ColumnGroup } = Table;
 import React from 'react';
 
@@ -185,21 +185,27 @@ export class UrlList extends React.Component {
 								title="操作"
 								render={(text, record) => (
 							<span>
-								<Button onClick={this.delete.bind(this,record._id)} type="danger">删除</Button>|
-								<Button loading={this.state.loadingPc} onClick={this.runpc.bind(this,record._id,this)} type="primary">爬一下</Button>|
-								<Button onClick={this.delete.bind(this,record.id)} type="primary">显示当前email</Button>
+
+							 	<Popconfirm placement="leftTop" title="确定删除吗？不要后悔哦!" onConfirm={this.delete.bind(this,record._id)} okText="确定" cancelText="算了吧">
+									<Button type="danger">删除</Button>|
+								</Popconfirm>
+
+								<Button loading={this.state.loadingPc} onClick={this.runpc.bind(this,record._id)} type="primary">爬一下</Button>|
+								<Button onClick={this.delete.bind(this,record.id)} type="primary">显示当前email(还没做不要点)</Button>
 							</span>
 						  )}
 							/>
 						</Table>
 					</TabPane>
 				</Tabs>
-				<Modal title="Basic Modal" visible={this.state.visible}
+				<Modal title="结果" visible={this.state.visible}
 					   onOk={this.handleOk.bind(this)} onCancel={this.handleCancel.bind(this)}
 				>
-					<p>some contents...</p>
-					<p>some contents...</p>
-					<p>some contents...</p>
+					<p>是不是觉得很牛逼！不要崇拜我！</p>
+					<h3>任务汇总：</h3>
+					<p>总邮箱数：{this.state.sumEmail}</p>
+					<p>新爬取邮箱数：{this.state.newEmail}</p>
+
 				</Modal>
 			</div>
 		)
@@ -217,7 +223,7 @@ export class UrlList extends React.Component {
 		}).catch((e)=>alert(e.message));
 	}
 
-	runpc(id,that){
+	runpc(id){
 
 		this.setState({ loadingPc: true });
 		http('/runpc?id='+id, {
@@ -229,10 +235,13 @@ export class UrlList extends React.Component {
 			var list = data.emailList;
 			
 			//message.success(data.msg);
-			console.log(22)
+
 			this.setState({
 				loadingPc: false,
 				visible: true,
+
+				sumEmail:data.length,
+				newEmail: data.countSuccess
 			});
 
 

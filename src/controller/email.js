@@ -5,7 +5,7 @@
 
 
 var rp = require('request-promise');
-
+var moment = require('moment');
 var MongoClient = require('mongodb').MongoClient;
 var DB_CONN_STR = 'mongodb://localhost:27017/test_db';
 var ObjectID = require('mongodb').ObjectID;
@@ -76,27 +76,46 @@ export async function runPC(ctx,next){
 	let res = await rp(options);
 	console.log(res);
 	console.log(typeof res);
-	ctx.body = {
-		result:true,
-		msg: '爬取成功',
-		res: res
-	}
-	//console.log(result);
-	//result.forEach((item)=>{
-	//	var cmdStr = 'python /home/www/feisu/src/py/dou.py ';
-	//	cmdStr += item.url;
-	//	console.log(cmdStr)
-	//	exec(cmdStr,function (err,stdout,stderr){
-	//		console.log('python执行结果')
-	//		console.log(stdout);
-	//
-	//	})
-	//})
+	let len = res.emailList.length;
 
-	//ctx.body = {
-	//	result : true,
-	//	msg: '爬取完毕'
-	//}
+	if( res.emailList.length >0){
+
+		var coll_douban = db.collection('douban');
+		let countSuccess = 0;
+		res.emailList.forEach(async (r)=>{
+				try{
+					let result = await  coll_douban.insert(r);
+					countSuccess++
+					console.log(result);
+				}catch (e){
+					console.log('插入失败');
+				//	console.log(e);
+				}
+		});
+		console.log(countSuccess);
+
+		ctx.body = {
+			result:true,
+			msg: '爬取成功',
+			res: res,
+			length: len,
+			countSuccess: countSuccess
+		}
+
+	}else{
+		ctx.body = {
+			result:false,
+			msg: '貌似没有爬到',
+			res: res,
+			length: len
+		}
+	}
+
+
+
+
+
+
 
 
 }
@@ -137,14 +156,33 @@ export async function day(ctx,next){
 }
 
 export async function getEmailList(ctx,next){
-
+	let status = {};
+	console.log(ctx.query.status);
+	if(ctx.query.status == '0'){
+		status.status = 0
+	}
+	console.log(status)
 	const db = await MongoClient.connect(DB_CONN_STR);
 	var collection = db.collection('douban');
-	let dtime  =new Date(new Date().toLocaleDateString()).getTime() /1000;
-	let email = await collection.find({}).toArray();
+	//let dtime  =new Date(new Date().toLocaleDateString()).getTime() /1000;
+	let email = await collection.aggregate([
+		{ $match : status},
+		{
+			$group : {_id : "$time", count : {$sum : 1}},
+		},
+			{
+				$sort: {
+					"_id": -1
+				}
+			}
+	]).toArray();
 
 	ctx.body = {
-		list: email
+		list: email.map((r)=>{
+			var day = moment.unix(parseInt(r._id));
+			r.time =   day.format("YYYY-MM-DD hh-mm-ss");
+			return r;
+		})
 	}
 }
 
@@ -156,4 +194,39 @@ export async function getUrlList(ctx,next){
 	ctx.body = {
 		list: result
 	}
+}
+
+export async function getEmailByTime(ctx,next){
+	let time = ctx.query.time;
+	const db = await MongoClient.connect(DB_CONN_STR);
+	var collection = db.collection('douban');
+	let email =  await collection.find({time:parseInt(time)}).toArray();
+	console.log(time);
+	console.log(email);
+	ctx.body ={
+		list: email
+	}
+}
+
+export async function setStatus(ctx,next){
+	let time = ctx.query.id;
+	const db = await MongoClient.connect(DB_CONN_STR);
+	var collection = db.collection('douban');
+	console.log(time);
+	let email =  await collection.update({time:parseInt(time)},{"$set":{'status':1}},{multi:true});
+	//console.log(email);
+	if(email.result.ok == 1){
+		ctx.body = {
+			result: true,
+			msg: '设置成功'
+		}
+
+	}else{
+		ctx.body = {
+			result: false,
+			msg: '设置失败'
+		}
+
+	}
+
 }

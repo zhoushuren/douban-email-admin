@@ -3,7 +3,7 @@
  * email :zhoujun247@gmail.com
  */
 
-import { Table, Button } from 'antd';
+import { Table, Button ,Modal ,Input,Switch} from 'antd';
 const { Column, ColumnGroup } = Table;
 import React from 'react';
 import http from '../../http';
@@ -12,7 +12,7 @@ import http from '../../http';
 export class EmailList extends React.Component {
 	constructor( props ) {
 		super( props );
-		this.state = { selectedRowKeys : '',loading:false};
+		this.state = { selectedRowKeys : '',loading:false,showEmailStr:false,emailStr:''};
 	}
 	start() {
 		this.setState({ loading: true });
@@ -27,8 +27,8 @@ export class EmailList extends React.Component {
 		console.log('selectedRowKeys changed: ', selectedRowKeys);
 		this.setState({ selectedRowKeys });
 	}
-	componentDidMount(){
-		http('/get_email_list', {
+	componentDidMount(status){
+		http('/get_email_list?status='+status, {
 			method: 'get',
 			headers: {
 				'Content-Type': 'application/json'
@@ -41,46 +41,103 @@ export class EmailList extends React.Component {
 	render(){
 		return (
 			<div>
+				<span>只显示未发:</span>
+				<Switch defaultChecked={false} onChange={this.onChangeStatus.bind(this)} />,
 				<Table dataSource={this.state.data}  >
 					<Column
-						title="id"
-						dataIndex="id"
+						title="ID"
+						dataIndex="_id"
 						key="id"
 					/>
 					<Column
-						title="Title"
-						dataIndex="title"
+						title="数量"
+						dataIndex="count"
 					/>
 					<Column
-						title="summary"
-						dataIndex="summary"
+						title="日期"
+						dataIndex="time"
 					/>
 					<Column
-						title="url"
-						dataIndex="url"
+						title="状态"
+						dataIndex="status"
 					/>
 					<Column
 						title="操作"
 						render={(text, record) => (
 							<span>
-								<Button onClick={this.delete.bind(this,record.id)} type="danger">删除</Button>
+								<Button onClick={this.delete.bind(this,record._id)} type="danger">标记已发</Button>|
+								<Button onClick={this.show.bind(this,record._id)} type="danger">显示邮箱</Button>
 							</span>
 						  )}
 					/>
 				</Table>
+				<Modal title="邮箱结果" visible={this.state.showEmailStr}
+					   onOk={this.handleOk.bind(this)} onCancel={this.handleCancel.bind(this)}
+				>
+					<p>
+						<Input type="textarea" rows={30} value={this.state.emailStr} />
+					</p>
+					<p>直接复制就好了，别客气</p>
+					<p>.</p>
+				</Modal>
 			</div>
 		)
 	}
 
 	delete(id){
-		http('/delete_msg?id='+id, {
+		http('/set_status?id='+id, {
 			method: 'get',
 			headers: {
 				'Content-Type': 'application/json'
 			}
 		}).then((data)=> {
-			this.componentDidMount()
+			this.componentDidMount();
+
+
 		}).catch((e)=>alert(e.message));
+	}
+
+	show(time){
+
+		http('/get_email_time?time='+time, {
+			method: 'get',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then((data)=> {
+
+			if(data && data.list.length>0){
+				let str = '';
+				data.list.forEach((r)=>{
+					str += r._email +','
+				});
+
+
+				this.setState({
+					showEmailStr: true,
+					emailStr:str
+				})
+			}
+
+
+		}).catch((e)=>alert(e.message));
+	}
+	handleOk(){
+		this.setState({
+			showEmailStr: false,
+		})
+	}
+	handleCancel(){
+		this.setState({
+			showEmailStr: false,
+		})
+	}
+	onChangeStatus(checked){
+		let c = 1;
+		if(checked){
+			c= 0;
+		}
+		this.componentDidMount(c);
 	}
 }
 export default EmailList;

@@ -20,5 +20,7 @@ router.get('/love',eMail.love);
 router.get('/day',eMail.day);
 router.get('/get_email_list',eMail.getEmailList);
 router.get('/get_url_list',eMail.getUrlList);
+router.get('/get_email_time',eMail.getEmailByTime);
+router.get('/set_status',eMail.setStatus);
 
 export default router;
