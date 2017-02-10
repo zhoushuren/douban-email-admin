@@ -13,7 +13,7 @@ const path = require('path');
 var send = require('koa-send');
 const app = new Koa();
 
-const ENV = 'test1'
+const ENV = 'test'
 app.keys = ['some secret hurr'];
 
 var CONFIG = {

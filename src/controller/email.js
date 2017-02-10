@@ -74,16 +74,13 @@ export async function runPC(ctx,next){
 	}
 
 	let res = await rp(options);
-	console.log(res);
-	console.log(typeof res);
 	let len = res.emailList.length;
-
 	if( res.emailList.length >0){
-
 		var coll_douban = db.collection('douban');
 		let countSuccess = 0;
-		res.emailList.forEach(async (r)=>{
+		res.emailList.map(async (r)=>{
 				try{
+					r.desc = obj.desc
 					let result = await  coll_douban.insert(r);
 					countSuccess++
 					console.log(result);
@@ -110,12 +107,6 @@ export async function runPC(ctx,next){
 			length: len
 		}
 	}
-
-
-
-
-
-
 
 
 }
@@ -166,20 +157,29 @@ export async function getEmailList(ctx,next){
 	var collection = db.collection('douban');
 	//let dtime  =new Date(new Date().toLocaleDateString()).getTime() /1000;
 	let email = await collection.aggregate([
+
 		{ $match : status},
 		{
-			$group : {_id : "$time", count : {$sum : 1}},
+			$group : {_id : "$time", count : {$sum : 1},desc:{$push:"$desc"},status:{$push:"$status"}},
 		},
 			{
 				$sort: {
 					"_id": -1
 				}
-			}
+			},
 	]).toArray();
-
+	//console.log(email)
 	ctx.body = {
 		list: email.map((r)=>{
 			var day = moment.unix(parseInt(r._id));
+			r.desc = r.desc[0] ?  r.desc[0] : '';
+			let send = 0;
+			r.status.forEach((sta)=>{
+				if(sta == 1){
+					send +=1
+				}
+			});
+			r.send = send
 			r.time =   day.format("YYYY-MM-DD hh-mm-ss");
 			return r;
 		})

@@ -190,7 +190,7 @@ export class UrlList extends React.Component {
 									<Button type="danger">删除</Button>|
 								</Popconfirm>
 
-								<Button loading={this.state.loadingPc} onClick={this.runpc.bind(this,record._id)} type="primary">爬一下</Button>|
+								<Button loading={this.state.loadingPc} onClick={this.runpc.bind(this,record._id,this)} type="primary">爬一下</Button>|
 								<Button onClick={this.delete.bind(this,record.id)} type="primary">显示当前email(还没做不要点)</Button>
 							</span>
 						  )}
@@ -223,8 +223,8 @@ export class UrlList extends React.Component {
 		}).catch((e)=>alert(e.message));
 	}
 
-	runpc(id){
-
+	runpc(id,loading){
+		console.log(loading);
 		this.setState({ loadingPc: true });
 		http('/runpc?id='+id, {
 			method: 'get',

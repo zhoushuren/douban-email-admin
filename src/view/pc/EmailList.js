@@ -50,6 +50,11 @@ export class EmailList extends React.Component {
 						key="id"
 					/>
 					<Column
+						title="url备注"
+						dataIndex="desc"
+						key="desc"
+					/>
+					<Column
 						title="数量"
 						dataIndex="count"
 					/>
@@ -58,8 +63,8 @@ export class EmailList extends React.Component {
 						dataIndex="time"
 					/>
 					<Column
-						title="状态"
-						dataIndex="status"
+						title="已发数"
+						dataIndex="send"
 					/>
 					<Column
 						title="操作"
