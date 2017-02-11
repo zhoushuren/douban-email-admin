@@ -106,8 +106,8 @@ export class UrlList extends React.Component {
 				'Content-Type': 'application/json'
 			}
 		}).then((data)=> {
-			data.list.map((r)=>{
-				r.key=r.id;
+			let list = data.list.map((r)=>{
+				r.key=r._id;
 				if(r.type == 1){
 					r.typeName = '豆瓣';
 				}else if(r.type == 2){
@@ -115,7 +115,7 @@ export class UrlList extends React.Component {
 				}
 				return r;
 			})
-			this.setState({ data: data.list });
+			this.setState({ data: list });
 		}).catch((e)=>alert(e.message));
 	}
 	render(){
@@ -204,8 +204,7 @@ export class UrlList extends React.Component {
 									<Button type="danger">删除</Button>|
 								</Popconfirm>
 									<PcButton onClick={ this.runpc.bind(this,record._id)  } />
-								|
-								<Button onClick={this.delete.bind(this,record.id)} type="primary">显示当前email(还没做不要点)</Button>
+								
 							</span>
 						  )}
 							/>
@@ -255,8 +254,6 @@ export class UrlList extends React.Component {
 				newEmail: data.countSuccess
 			});
 
-
-			this.componentDidMount();
 		}).catch((e)=>{ cb(false);  alert(e.message)});
 	}
 

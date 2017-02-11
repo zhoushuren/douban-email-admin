@@ -31,12 +31,7 @@ export class App extends React.Component {
 				>
 					<div className="logo"><h1>hong</h1></div>
 					<Menu theme="dark" mode="inline" defaultSelectedKeys={['']}>
-						<Menu.Item key="1">
-							<Icon type="user" />
-								<Link className="nav-text" to="/user">用户</Link>
-
-						</Menu.Item>
-
+						
 						<Menu.Item key="3">
 							<Icon type="bulb" />
 							<span className="nav-text">
